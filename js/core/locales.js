@@ -9,7 +9,7 @@
  */
 window.PS_LOCALES = (() => {
   const choices = [
-    ['es', 'Español', 'es-ES'], ['en', 'English', 'en-GB'],
+    ['es', 'Español', 'es-ES'], ['en', 'English', 'en-GB'], ['vi', 'Tiếng Việt', 'vi-VN'],
     ['fr', 'Français', 'fr-FR'], ['it', 'Italiano', 'it-IT'],
     ['pt-BR', 'Português (Brasil)', 'pt-BR'],
     ['zh-Hans', '简体中文', 'zh-CN'], ['zh-Hant', '繁體中文', 'zh-TW']
@@ -21,6 +21,7 @@ window.PS_LOCALES = (() => {
       if (s.includes('-hant') || /^zh-(tw|hk|mo)(-|$)/.test(s)) return 'zh-Hant';
       return 'zh-Hans';
     }
+    if (/^vi(?:-|$)/.test(s)) return 'vi';
     if (/^pt(?:-|$)/.test(s)) return 'pt-BR';
     return choices.find(([id]) => s === id || s.startsWith(id + '-'))?.[0] || null;
   }
