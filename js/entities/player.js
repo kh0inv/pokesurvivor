@@ -101,7 +101,7 @@ G.Player = class Player {
   cy() { return this.y; }
 
   // ---------------- stats efectivos ----------------
-  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
+  get atk() { const bonus = (window.CHEAT_BONUS_ATK || 0); return (this.baseAtk + bonus) * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
   /**
    * Ataque con un movimiento: el físico o el especial de tu Pokémon (ver
    * G.Stats), con las danzas que sean de su lado (las de mejora, sin ninguna).
@@ -119,7 +119,7 @@ G.Player = class Player {
     const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount) * (stuck ? 0.5 : 1) * (ab.speed ? ab.speed(this) : 1);
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid && !ab.steady ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
-    return G.Judgment && G.Judgment.active ? G.Judgment.capSpd(s * slow * w) : s * slow * w;
+    return (G.Judgment && G.Judgment.active ? G.Judgment.capSpd(s * slow * w) : s * slow * w) * (window.CHEAT_SPEED_MUL || 1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + this.buffs.def.n * this.buffs.def.amount); }
   get regen() { return this.regenFlat + this.buffs.regen.n * this.buffs.regen.amount; }
@@ -257,6 +257,7 @@ G.Player = class Player {
    */
   /** @param cat  'physical' | 'special': con qué defensa tuya se para (la del enemigo que pega). */
   hurt(amount, type = null, pure = false, cat = null) {
+    if (window.CHEAT_GOD_MODE) return;
     if (this.invuln > 0 || this.dead) return;
     // Habilidad (data/ability-fx.js): absorber un tipo, esquivar o recibir menos.
     const ab = this.abil, cls = cat === 'physical' ? 'p' : cat === 'special' ? 's' : '';
@@ -373,6 +374,8 @@ G.Player = class Player {
   // ---------------- ciclo ----------------
   update(dt) {
     this.anim.update(dt);
+    if (window.CHEAT_GOD_MODE && !this.remote) { if (this.dead) this.dead = false; if (this.hp < this.maxHp) this.hp = this.maxHp; }
+
     if (this.dead) return;
     if (this.invuln > 0) this.invuln -= dt;
     if (this.flash > 0) this.flash -= dt;
@@ -511,6 +514,8 @@ G.Player = class Player {
    */
   netUpdate(dt) {
     this.anim.update(dt);
+    if (window.CHEAT_GOD_MODE && !this.remote) { if (this.dead) this.dead = false; if (this.hp < this.maxHp) this.hp = this.maxHp; }
+
     const n = this.net;
     if (!n) return;
     if (this.flash > 0) this.flash -= dt;
